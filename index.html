@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>My first three.js app</title>
+		<style>
+			body { margin: 5% auto; }
+			canvas { width: 80%; height: 80% }
+            #progress {
+                margin-bottom: 2%;
+                min-width: 50%;
+            }
+        </style>
+        <script src="js/three.js"></script>
+        <script src="js/STLLoader.js"></script>
+    </head>
+	<body>
+        <div id="progress"></div>
+        <script>
+            // window properties
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+
+            // camera properties
+            const FOV = 35;
+            const ASPECT_RATIO = windowWidth / windowHeight;
+            const NEAR = 0.1;
+            const FAR = 1000;
+
+            // scene settings
+            const SCENE_BKG = new THREE.Color("rgb(220,220,220)");
+
+            const scene = new THREE.Scene();
+            //scene.background = SCENE_BKG;
+
+            const camera = new THREE.PerspectiveCamera( FOV, ASPECT_RATIO, NEAR, FAR );
+            const renderer = new THREE.WebGLRenderer();
+            renderer.setSize( windowWidth, windowHeight );
+
+            const progressBar = document.querySelector('#progress');
+            document.body.appendChild( renderer.domElement );
+
+            const animate = () => {
+                requestAnimationFrame(animate);
+                renderer.render(scene, camera);
+            };
+            camera.position.set(0, 0, 10);
+
+            const STLLoader = new THREE.STLLoader();
+            STLLoader.load('./models/cube-model.json', function(geometry) {
+                // console.dir(geometry);
+                const material = new THREE.MeshPhongMaterial( { color: 0x0000ff } );
+                const mesh = new THREE.Mesh(geometry, material);
+                // console.dir(mesh);
+                // add some light
+                const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 1);
+                directionalLight.position.set(0, 0, 0);
+                directionalLight.castShadow = true;
+                
+                scene.add(directionalLight);
+                scene.add(mesh);
+                animate();
+  
+            }, function (xhr) {
+                // show progress here
+                progressBar.innerHTML = `<span style="color: green;">${(xhr.loaded/xhr.total) * 100}%</span> have been loaded`; 
+            }, function(err) {
+                console.error('[!] Fatal Error: Could not load model');
+                console.error(err);
+            });
+        </script>
+	</body>
+</html> 
