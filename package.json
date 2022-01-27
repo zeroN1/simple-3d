@@ -11,6 +11,6 @@
   "license": "ISC",
   "dependencies": {
     "parse-stl-binary": "^1.0.1",
-    "three": "^0.111.0"
+    "three": "^0.137.0"
   }
 }
